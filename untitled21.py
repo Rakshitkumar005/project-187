@@ -5,11 +5,13 @@ from tkinter import messagebox
 import os
 
 root = Tk()
+root.title("Encrypting Personal Data")
 root.geometry("400x250")
 root.config(bg = "#99c787")
 
 file_name_entry = ""
 encryption_text_data = ""
+decryption_text_data = ""
 
 def saveData():
     global file_name_entry
@@ -22,6 +24,22 @@ def saveData():
     print(hex_string)
     file.write(hex_string)
     file_name_entry.delete(0, END)
+    encryption_text_data.delete(1.0, END)
+    messagebox.showinfo("Update", "Success")
+
+    
+def viewData():
+    global decryption_text_data
+    text_file = filedialog.askopenfilename(title = "Open Text File", filetypes = (("Text Files", "*.txt"), ))
+    name = os.path.basename(text_file)
+    print(name)
+    text_file = open(name, 'r')
+    paragraph = text_file.read()
+    byte_str = bytes.fromhex(paragraph)
+    original = decrypt('AIM', byte_str)
+    final_data = original.decode("utf-8")
+    decryption_text_data.insert(END, final_data)
+    text_file.close()
 
 def startDecryption():
     global file_name_entry
@@ -29,12 +47,14 @@ def startDecryption():
     root.destroy()
  
     decryption_window = Tk()
+    decryption_window.title("Decryption")
+    decryption_window.config(bg = "#99c787")
     decryption_window.geometry("600x500")
     
     decryption_text_data = Text(decryption_window, height = 20, width = 72)
     decryption_text_data.place(relx = 0.5, rely = 0.35, anchor = CENTER)
     
-    btn_open_file = Button(decryption_window, text = "Choose File..", font = 'arial 13')
+    btn_open_file = Button(decryption_window, text = "Choose File..", font = 'arial 13', command = viewData, bg = "#F5DEB3", relief = FLAT)
     btn_open_file.place(relx = 0.5, rely = 0.8, anchor = CENTER)
     
     decryption_window.mainloop()
@@ -45,8 +65,9 @@ def startEncryption():
     root.destroy()
  
     encryption_window = Tk()
+    encryption_window.title("Encryption")
+    encryption_window.config(bg = '#99c787')
     encryption_window.geometry("600x500")
-    encryption_window.config(bg = "#99c787")
     
     file_name_label = Label(encryption_window, text = "File Name:" , font = 'arial 13', bg = "#99c787")
     file_name_label.place(relx = 0.1, rely = 0.15, anchor = CENTER)
